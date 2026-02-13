@@ -1,175 +1,180 @@
-const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
-const rand = (min, max) => Math.random() * (max - min) + min;
+// script.js
+(() => {
+  const actions = document.getElementById("actions");
+  const yesBtn = document.getElementById("yesBtn");
+  const noBtn = document.getElementById("noBtn");
 
-// Floating hearts
-const heartsLayer = document.getElementById("hearts");
-const heartChars = ["💗","💖","💘","💝","💕","💞","💓","💟"];
-let heartTimer = null;
+  const questionSection = document.getElementById("questionSection");
+  const successSection = document.getElementById("successSection");
 
-function spawnHeart(){
-  const h = document.createElement("div");
-  h.className = "heart";
-  h.textContent = heartChars[Math.floor(Math.random() * heartChars.length)];
+  const particles = document.getElementById("particles");
+  const heartsBg = document.getElementById("heartsBg");
 
-  const startX = rand(0, window.innerWidth);
-  const startY = window.innerHeight + rand(10, 60);
-  const duration = rand(7.5, 13.5);
+  // --------- Background hearts (subtle, non-interactive) ----------
+  function spawnBackgroundHearts() {
+    const count = 18;
 
-  h.style.left = `${startX}px`;
-  h.style.top = `${startY}px`;
-  h.style.setProperty("--drift", `${rand(-90, 90)}px`);
-  h.style.setProperty("--spin", `${rand(-25, 25)}deg`);
-  h.style.animationDuration = `${duration}s`;
-  h.style.opacity = String(rand(0.10, 0.20));
+    for (let i = 0; i < count; i++) {
+      const h = document.createElement("span");
+      h.className = "heart";
 
-  heartsLayer.appendChild(h);
-  h.addEventListener("animationend", () => h.remove());
-}
+      const left = Math.random() * 100; // %
+      const size = 10 + Math.random() * 12; // px
+      const duration = 12 + Math.random() * 14; // s
+      const delay = Math.random() * 10; // s
+      const opacity = 0.16 + Math.random() * 0.22;
 
-function startHearts(){
-  if (heartTimer) return;
-  for(let i=0;i<10;i++) setTimeout(spawnHeart, i * 180);
-  heartTimer = setInterval(spawnHeart, 420);
-}
-startHearts();
+      h.style.left = `${left}%`;
+      h.style.bottom = `${-20 - Math.random() * 25}vh`;
+      h.style.width = `${size}px`;
+      h.style.height = `${size}px`;
+      h.style.opacity = opacity.toFixed(2);
+      h.style.animationDuration = `${duration}s`;
+      h.style.animationDelay = `${delay}s`;
 
-// Sparkle cursor
-const sparkle = document.getElementById("sparkle");
-let lastSparkle = 0;
-
-window.addEventListener("pointermove", (e) => {
-  const now = performance.now();
-  if (now - lastSparkle < 22) return;
-  lastSparkle = now;
-
-  sparkle.style.left = e.clientX + "px";
-  sparkle.style.top = e.clientY + "px";
-  sparkle.style.opacity = "0.55";
-  sparkle.animate(
-    [
-      { transform: "translate(-50%,-50%) scale(1)", opacity: 0.55 },
-      { transform: "translate(-50%,-50%) scale(2.4)", opacity: 0 }
-    ],
-    { duration: 380, easing: "ease-out" }
-  );
-});
-
-// NO button evasive
-const actions = document.getElementById("actions");
-const noBtn = document.getElementById("noBtn");
-
-function placeNoButtonRandom(){
-  const bounds = actions.getBoundingClientRect();
-  const btn = noBtn.getBoundingClientRect();
-  const pad = 10;
-
-  const minX = pad;
-  const maxX = bounds.width - btn.width - pad;
-  const minY = pad;
-  const maxY = bounds.height - btn.height - pad;
-
-  const x = (maxX <= minX) ? (bounds.width - btn.width) / 2 : rand(minX, maxX);
-  const y = (maxY <= minY) ? (bounds.height - btn.height) / 2 : rand(minY, maxY);
-
-  noBtn.style.left = `${clamp(x, 0, bounds.width - btn.width)}px`;
-  noBtn.style.top = `${clamp(y, 0, bounds.height - btn.height)}px`;
-  noBtn.style.transform = "translateX(0)";
-}
-
-function pointerNearNoButton(e){
-  const nb = noBtn.getBoundingClientRect();
-  const cx = nb.left + nb.width / 2;
-  const cy = nb.top + nb.height / 2;
-  const dx = e.clientX - cx;
-  const dy = e.clientY - cy;
-  const dist = Math.hypot(dx, dy);
-
-  const danger = clamp(Math.min(window.innerWidth, window.innerHeight) * 0.16, 90, 160);
-  if (dist < danger) placeNoButtonRandom();
-}
-
-function initNoButton(){
-  // Wait one frame so flex layout positions the buttons naturally (centered, side-by-side)
-  requestAnimationFrame(() => {
-    const bounds = actions.getBoundingClientRect();
-    const nb = noBtn.getBoundingClientRect();
-
-    // Convert current on-screen position to coordinates relative to .actions
-    const left = nb.left - bounds.left;
-    const top  = nb.top  - bounds.top;
-
-    // Now enable evasive mode, but keep the same initial position
-    noBtn.classList.add("evasive");
-    noBtn.style.left = `${left}px`;
-    noBtn.style.top  = `${top}px`;
-    noBtn.style.transform = "translateX(0)";
-  });
-}
-
-
-window.addEventListener("pointermove", (e) => {
-  if (window.matchMedia("(pointer: fine)").matches) pointerNearNoButton(e);
-});
-noBtn.addEventListener("mouseenter", () => {
-  if (window.matchMedia("(pointer: fine)").matches) placeNoButtonRandom();
-});
-noBtn.addEventListener("pointerdown", (e) => {
-  e.preventDefault();
-  placeNoButtonRandom();
-});
-noBtn.addEventListener("click", (e) => {
-  e.preventDefault();
-  placeNoButtonRandom();
-});
-window.addEventListener("resize", () => placeNoButtonRandom());
-//window.addEventListener("load", () => placeNoButtonRandom());
-
-// YES behavior + burst
-const yesBtn = document.getElementById("yesBtn");
-const success = document.getElementById("success");
-const burstLayer = document.getElementById("burst");
-
-function burstAt(x, y){
-  const pieces = 36;
-  const chars = ["✨","💖","💗","💘","💕","💞","💝","🌸","⭐"];
-
-  for(let i=0;i<pieces;i++){
-    const p = document.createElement("div");
-    p.className = "particle";
-    p.textContent = chars[Math.floor(Math.random()*chars.length)];
-
-    const x0 = x + rand(-8, 8);
-    const y0 = y + rand(-8, 8);
-
-    const angle = (Math.PI * 2) * (i / pieces) + rand(-0.25, 0.25);
-    const radius = rand(80, 220);
-    const x1 = x + Math.cos(angle) * radius;
-    const y1 = y + Math.sin(angle) * radius;
-
-    p.style.left = x0 + "px";
-    p.style.top = y0 + "px";
-    p.style.setProperty("--x0", "0px");
-    p.style.setProperty("--y0", "0px");
-    p.style.setProperty("--x1", (x1 - x0) + "px");
-    p.style.setProperty("--y1", (y1 - y0) + "px");
-    p.style.setProperty("--rot", `${rand(-140, 140)}deg`);
-    p.style.fontSize = rand(14, 24) + "px";
-
-    burstLayer.appendChild(p);
-    p.addEventListener("animationend", () => p.remove());
+      heartsBg.appendChild(h);
+    }
   }
-}
 
-function showSuccess(){
-  yesBtn.disabled = true;
-  noBtn.style.display = "none";
-  yesBtn.style.display = "none";
-  success.style.display = "flex";
-  for(let i=0;i<14;i++) setTimeout(spawnHeart, i * 90);
-}
+  // --------- Button positioning: absolute + centered, no shifting ----------
+  // We compute a stable "start" position so both buttons begin perfectly aligned.
+  function placeButtonsInitially() {
+    const pad = 10;
+    const a = actions.getBoundingClientRect();
+    const y = Math.round((a.height - yesBtn.offsetHeight) / 2);
 
-yesBtn.addEventListener("click", () => {
-  const rect = yesBtn.getBoundingClientRect();
-  burstAt(rect.left + rect.width/2, rect.top + rect.height/2);
-  setTimeout(showSuccess, 420);
-});
+    const totalWidth = yesBtn.offsetWidth + 16 + noBtn.offsetWidth;
+    const startX = Math.round((a.width - totalWidth) / 2);
+
+    // YES stays fixed forever.
+    yesBtn.style.left = `${Math.max(pad, startX)}px`;
+    yesBtn.style.top = `${y}px`;
+
+    // NO starts aligned next to YES.
+    const noStartX = Math.max(pad, startX + yesBtn.offsetWidth + 16);
+    noBtn.style.left = `${noStartX}px`;
+    noBtn.style.top = `${y}px`;
+  }
+
+  // --------- Evasive NO logic ----------
+  // IMPORTANT: Only move when cursor directly hovers NO button (not proximity).
+  // It moves to a random location inside the .actions container and avoids overlapping YES.
+  function getSafeRandomPosition() {
+    const a = actions.getBoundingClientRect();
+    const yesRect = yesBtn.getBoundingClientRect();
+
+    const pad = 10;
+
+    const maxX = a.width - noBtn.offsetWidth - pad;
+    const maxY = a.height - noBtn.offsetHeight - pad;
+
+    const yesLocal = {
+      x: yesRect.left - a.left,
+      y: yesRect.top - a.top,
+      w: yesRect.width,
+      h: yesRect.height,
+    };
+
+    const noW = noBtn.offsetWidth;
+    const noH = noBtn.offsetHeight;
+
+    // Try a handful of random spots; pick the first that doesn't overlap YES.
+    for (let attempt = 0; attempt < 24; attempt++) {
+      const x = pad + Math.random() * Math.max(1, (maxX - pad));
+      const y = pad + Math.random() * Math.max(1, (maxY - pad));
+
+      const overlapsYes =
+        x < yesLocal.x + yesLocal.w + 12 &&
+        x + noW + 12 > yesLocal.x &&
+        y < yesLocal.y + yesLocal.h + 12 &&
+        y + noH + 12 > yesLocal.y;
+
+      if (!overlapsYes) {
+        return { x: Math.round(x), y: Math.round(y) };
+      }
+    }
+
+    // Fallback: top-left safe area away from YES.
+    return { x: pad, y: pad };
+  }
+
+  function moveNoButton() {
+    const { x, y } = getSafeRandomPosition();
+    noBtn.style.left = `${x}px`;
+    noBtn.style.top = `${y}px`;
+  }
+
+  // --------- Heart burst + sparkles ----------
+  function burstHearts(anchorEl) {
+    const a = actions.getBoundingClientRect();
+    const b = anchorEl.getBoundingClientRect();
+
+    const cx = (b.left - a.left) + b.width / 2;
+    const cy = (b.top - a.top) + b.height / 2;
+
+    const emojis = ["💖", "💘", "✨", "💗", "💞", "🌸"];
+    const count = 24;
+
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement("span");
+      p.className = "particle";
+      p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 70 + Math.random() * 90;
+
+      const dx = Math.cos(angle) * dist;
+      const dy = Math.sin(angle) * dist;
+
+      p.style.left = `${cx}px`;
+      p.style.top = `${cy}px`;
+
+      // Used by CSS animation to fly outward.
+      p.style.setProperty("--dx", `${dx}px`);
+      p.style.setProperty("--dy", `${dy}px`);
+
+      // Slight staggering for a cute pop.
+      p.style.animationDelay = `${Math.random() * 120}ms`;
+
+      particles.appendChild(p);
+
+      p.addEventListener("animationend", () => p.remove(), { once: true });
+    }
+  }
+
+  function showSuccess() {
+    questionSection.classList.remove("is-active");
+    successSection.classList.add("is-active");
+    successSection.classList.add("pop-in");
+  }
+
+  // --------- Event wiring ----------
+  // NO moves ONLY when hovered directly.
+  noBtn.addEventListener("mouseenter", () => {
+    moveNoButton();
+  });
+
+  // Prevent accidental click on NO (optional gentle safety)
+  noBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    moveNoButton();
+  });
+
+  yesBtn.addEventListener("click", () => {
+    burstHearts(yesBtn);
+    showSuccess();
+  });
+
+  // Keep everything stable on load and resize.
+  function init() {
+    spawnBackgroundHearts();
+    placeButtonsInitially();
+  }
+
+  window.addEventListener("load", init);
+
+  window.addEventListener("resize", () => {
+    // Re-center the buttons without shifting layout
+    placeButtonsInitially();
+  });
+})();
