@@ -208,10 +208,24 @@ body{
 .actions{
   position:relative;
   width: min(520px, 92vw);
-  height: 150px;
+  height: 170px;
   margin: 0 auto;
   display:block;
 }
+
+.no-arena{
+  position:absolute;
+  right: 0;
+  top: -20px;
+  bottom: -40px;
+  width: 50%;
+  border-radius: 18px;
+  pointer-events:none;
+  /* invisible by default */
+}
+
+/* OPTIONAL: turn this on to visualize the arena while tuning */
+/*.no-arena{ outline: 2px solid rgba(0,0,0,0.25); } */
 
 .btn{
   appearance:none;
@@ -229,7 +243,10 @@ body{
   height: 54px;
 
   transform: translateZ(0);
-  transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+  transition:
+    left 180ms cubic-bezier(.2,.9,.2,1),  
+    top 180ms cubic-bezier(.2,.9,.2,1),
+    transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
   position:absolute;
   will-change: left, top, transform;
 }
