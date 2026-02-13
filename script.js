@@ -89,10 +89,23 @@ function pointerNearNoButton(e){
 }
 
 function initNoButton(){
-  noBtn.classList.add("evasive");
-  requestAnimationFrame(() => placeNoButtonRandom());
+  // Wait one frame so flex layout positions the buttons naturally (centered, side-by-side)
+  requestAnimationFrame(() => {
+    const bounds = actions.getBoundingClientRect();
+    const nb = noBtn.getBoundingClientRect();
+
+    // Convert current on-screen position to coordinates relative to .actions
+    const left = nb.left - bounds.left;
+    const top  = nb.top  - bounds.top;
+
+    // Now enable evasive mode, but keep the same initial position
+    noBtn.classList.add("evasive");
+    noBtn.style.left = `${left}px`;
+    noBtn.style.top  = `${top}px`;
+    noBtn.style.transform = "translateX(0)";
+  });
 }
-initNoButton();
+
 
 window.addEventListener("pointermove", (e) => {
   if (window.matchMedia("(pointer: fine)").matches) pointerNearNoButton(e);
@@ -109,7 +122,7 @@ noBtn.addEventListener("click", (e) => {
   placeNoButtonRandom();
 });
 window.addEventListener("resize", () => placeNoButtonRandom());
-window.addEventListener("load", () => placeNoButtonRandom());
+//window.addEventListener("load", () => placeNoButtonRandom());
 
 // YES behavior + burst
 const yesBtn = document.getElementById("yesBtn");

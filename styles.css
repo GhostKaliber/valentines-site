@@ -184,12 +184,12 @@ h1{
   background: linear-gradient(135deg, #ffd1df, #ffc2d3);
   color: #5a2d3b;
 }
+
 .no.evasive{
   position:absolute;
-  left: 50%;
-  top: 12px;
-  transform: translateX(-50%);
+  /* left/top will be set by JS based on its initial centered flex position */
 }
+
 
 .sparkle{
   position:fixed;
