@@ -1,4 +1,3 @@
-/* styles.css */
 @import url("https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;600;700&display=swap");
 
 :root{
@@ -6,38 +5,34 @@
   --bg2:#ffe8f1;
   --bg3:#fff8fb;
 
-  --card: rgba(255, 255, 255, 0.52);
-  --cardBorder: rgba(255, 255, 255, 0.55);
+  --card: rgba(255, 255, 255, 0.58);
+  --cardBorder: rgba(255, 255, 255, 0.62);
 
   --text:#3a2b35;
   --muted:#6a4f5f;
 
   --pink:#ff5aa8;
   --pink2:#ff79bb;
-  --cream:#fff4e8;
 
-  --shadow: 0 20px 60px rgba(255, 87, 164, 0.18);
-  --glow: 0 0 32px rgba(255, 90, 168, 0.22);
-
+  --shadow: 0 26px 70px rgba(255, 87, 164, 0.18);
   --radius: 26px;
 }
 
 *{ box-sizing:border-box; }
-
-html, body{
-  height:100%;
-}
+html, body{ height:100%; }
 
 body{
   margin:0;
   font-family:"Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   color:var(--text);
   overflow:hidden;
+
+  /* Softer background + closer to screenshot */
   background:
-    radial-gradient(1000px 700px at 20% 18%, var(--bg3), transparent 55%),
-    radial-gradient(900px 600px at 80% 22%, var(--bg2), transparent 55%),
-    radial-gradient(900px 700px at 55% 80%, var(--bg1), transparent 60%),
-    linear-gradient(180deg, #fff7fb, #ffeef6);
+    radial-gradient(1100px 800px at 20% 18%, #ffffff, transparent 60%),
+    radial-gradient(1000px 700px at 80% 22%, var(--bg2), transparent 60%),
+    radial-gradient(1100px 800px at 55% 85%, var(--bg1), transparent 62%),
+    linear-gradient(180deg, #fff8fc 0%, #ffeef7 55%, #ffe6f2 100%);
 }
 
 .page{
@@ -49,34 +44,52 @@ body{
   isolation:isolate;
 }
 
-/* Soft vignette + glow behind card */
+/* Big “spray” glow centered behind the card */
 .page::before{
   content:"";
   position:absolute;
-  inset:-40px;
+  inset:-120px;
   background:
-    radial-gradient(500px 300px at 50% 40%, rgba(255, 90, 168, 0.18), transparent 70%),
-    radial-gradient(900px 700px at 50% 60%, rgba(255, 255, 255, 0.75), transparent 65%);
-  filter: blur(12px);
-  z-index:-2;
+    radial-gradient(780px 520px at 50% 52%, rgba(255, 90, 168, 0.26), transparent 70%),
+    radial-gradient(1100px 760px at 50% 62%, rgba(255, 90, 168, 0.14), transparent 72%),
+    radial-gradient(900px 650px at 50% 50%, rgba(255, 255, 255, 0.70), transparent 68%);
+  filter: blur(18px);
+  z-index:-3;
+  pointer-events:none;
+}
+
+/* Subtle “pink splotches” like the screenshot */
+.page::after{
+  content:"";
+  position:absolute;
+  inset:-140px;
+  background:
+    radial-gradient(220px 180px at 12% 20%, rgba(255, 90, 168, 0.18), transparent 72%),
+    radial-gradient(260px 210px at 86% 18%, rgba(255, 121, 187, 0.16), transparent 74%),
+    radial-gradient(300px 250px at 84% 82%, rgba(255, 90, 168, 0.12), transparent 76%),
+    radial-gradient(280px 240px at 18% 78%, rgba(255, 121, 187, 0.10), transparent 78%),
+    radial-gradient(160px 130px at 30% 34%, rgba(255, 255, 255, 0.55), transparent 72%);
+  filter: blur(14px);
+  opacity:0.85;
+  z-index:-4;
+  pointer-events:none;
 }
 
 .hearts-bg{
   position:absolute;
   inset:0;
-  z-index:-1;
+  z-index:-2;
   pointer-events:none;
   overflow:hidden;
 }
 
-/* Floating hearts */
 .heart{
   position:absolute;
   width:14px;
   height:14px;
   transform: rotate(45deg);
-  opacity:0.35;
-  filter: drop-shadow(0 6px 10px rgba(255, 90, 168, 0.18));
+  opacity:0.22;
+  filter: drop-shadow(0 6px 10px rgba(255, 90, 168, 0.14));
   animation: floatUp linear infinite;
 }
 
@@ -87,7 +100,7 @@ body{
   width:14px;
   height:14px;
   border-radius:50%;
-  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(255, 121, 187, 0.9) 55%, rgba(255, 90, 168, 0.95));
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(255, 121, 187, 0.75) 55%, rgba(255, 90, 168, 0.8));
 }
 
 .heart::before{ left:-7px; top:0; }
@@ -95,33 +108,51 @@ body{
 
 @keyframes floatUp{
   0%{ transform: translateY(18vh) rotate(45deg) scale(0.9); opacity:0; }
-  10%{ opacity:0.35; }
-  60%{ opacity:0.28; }
-  100%{ transform: translateY(-120vh) rotate(45deg) scale(1.25); opacity:0; }
+  10%{ opacity:0.22; }
+  60%{ opacity:0.16; }
+  100%{ transform: translateY(-120vh) rotate(45deg) scale(1.2); opacity:0; }
 }
 
-/* Card */
 .card{
-  width:min(720px, 92vw);
-  background: var(--card);
-  border: 1px solid var(--cardBorder);
+  width:min(760px, 92vw);
   border-radius: var(--radius);
+  position:relative;
+
+  background: linear-gradient(180deg, rgba(255,255,255,0.62), rgba(255, 241, 248, 0.46));
+  border: 1px solid var(--cardBorder);
   box-shadow: var(--shadow);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  padding: 44px 48px 38px;
-  position:relative;
+
+  padding: 50px 56px 42px;
+  text-align:center;
 }
 
+/* inner soft sheen */
 .card::before{
   content:"";
   position:absolute;
   inset:0;
   border-radius: var(--radius);
-  background:
-    linear-gradient(135deg, rgba(255,255,255,0.55), rgba(255,255,255,0.18));
+  background: linear-gradient(135deg, rgba(255,255,255,0.60), rgba(255,255,255,0.16));
   opacity:0.9;
   pointer-events:none;
+  z-index:0;
+}
+
+/* subtle splotches inside the card */
+.card::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius: var(--radius);
+  background:
+    radial-gradient(260px 210px at 22% 26%, rgba(255, 90, 168, 0.14), transparent 74%),
+    radial-gradient(300px 240px at 82% 34%, rgba(255, 121, 187, 0.12), transparent 76%),
+    radial-gradient(320px 260px at 70% 82%, rgba(255, 90, 168, 0.10), transparent 78%);
+  opacity:0.55;
+  pointer-events:none;
+  z-index:0;
 }
 
 .card-inner{
@@ -129,38 +160,59 @@ body{
   z-index:1;
 }
 
+/* Bigger spray glow around card */
+.glow{
+  position:absolute;
+  inset:-42px;
+  border-radius: calc(var(--radius) + 42px);
+  pointer-events:none;
+  box-shadow:
+    0 40px 140px rgba(255, 90, 168, 0.30),
+    0 0 90px rgba(255, 90, 168, 0.18);
+  opacity:0.60;
+  filter: blur(2px);
+  z-index:-1;
+}
+
+.mini-heart{
+  font-size: 18px;
+  opacity:0.85;
+  margin-bottom: 10px;
+  filter: drop-shadow(0 10px 18px rgba(255, 90, 168, 0.14));
+}
+
 .kicker{
   font-family:"Pacifico", cursive;
-  font-size: 42px;
-  line-height:1.1;
-  margin:0 0 10px;
+  font-size: 46px;
+  line-height:1.08;
+  margin:0 0 12px;
   letter-spacing:0.2px;
-  text-shadow: 0 10px 30px rgba(255, 90, 168, 0.16);
+  text-shadow: 0 10px 30px rgba(255, 90, 168, 0.14);
 }
 
 .subtext{
-  margin: 0 0 26px;
+  margin: 0 auto 26px;
   color: var(--muted);
   font-size: 16.5px;
   line-height:1.6;
+  max-width: 560px;
 }
 
 .divider{
   height:1px;
   background: linear-gradient(90deg, transparent, rgba(255,90,168,0.35), transparent);
-  margin: 22px 0 26px;
+  margin: 22px auto 26px;
+  max-width: 560px;
 }
 
-/* Actions container */
 .actions{
   position:relative;
-  width: 460px;          /* fixed so no layout shifting */
-  height: 120px;         /* fixed playground for NO button */
+  width: min(520px, 92vw);
+  height: 150px;
   margin: 0 auto;
   display:block;
 }
 
-/* Buttons */
 .btn{
   appearance:none;
   border: none;
@@ -172,14 +224,13 @@ body{
   letter-spacing:0.4px;
 
   padding: 14px 22px;
-  border-radius: 18px; /* rounded rectangle */
-  min-width: 150px;
+  border-radius: 18px; /* rectangular with rounded corners */
+  min-width: 160px;
   height: 54px;
 
-  box-shadow: 0 14px 34px rgba(255, 90, 168, 0.20);
   transform: translateZ(0);
   transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
-  position:absolute; /* both are absolutely positioned to avoid shifts */
+  position:absolute;
   will-change: left, top, transform;
 }
 
@@ -190,7 +241,6 @@ body{
 
 .btn:hover{
   transform: translateZ(0) translateY(-1px);
-  box-shadow: 0 18px 42px rgba(255, 90, 168, 0.26);
 }
 
 .btn:active{
@@ -200,47 +250,33 @@ body{
 .btn-yes{
   background: linear-gradient(135deg, #ff4fa0, #ff86c2);
   color:white;
-  text-shadow: 0 8px 22px rgba(0,0,0,0.15);
+  text-shadow: 0 8px 22px rgba(0,0,0,0.12);
+  box-shadow: 0 18px 46px rgba(255, 90, 168, 0.28);
 }
 
 .btn-no{
-  background: linear-gradient(135deg, rgba(255,255,255,0.82), rgba(255,255,255,0.58));
+  background: linear-gradient(135deg, rgba(255,255,255,0.86), rgba(255,255,255,0.62));
   color:#6a3d57;
-  border: 1px solid rgba(255, 90, 168, 0.28);
-  box-shadow: 0 14px 34px rgba(106, 79, 95, 0.10);
+  border: 1px solid rgba(255, 90, 168, 0.26);
+  box-shadow: 0 16px 40px rgba(106, 79, 95, 0.10);
 }
 
-/* Subtle glow on the card */
-.glow{
-  position:absolute;
-  inset:-2px;
-  border-radius: calc(var(--radius) + 2px);
-  pointer-events:none;
-  box-shadow: var(--glow);
-  opacity:0.75;
-}
-
-/* Question/Success sections */
-.section{
-  display:none;
-}
-
-.section.is-active{
-  display:block;
-}
+.section{ display:none; }
+.section.is-active{ display:block; }
 
 .success-title{
   font-family:"Pacifico", cursive;
-  font-size: 44px;
+  font-size: 46px;
   margin: 0 0 10px;
   line-height:1.05;
 }
 
 .success-text{
-  margin: 0 0 10px;
+  margin: 0 auto 10px;
   color: var(--muted);
   font-size: 16.5px;
   line-height: 1.7;
+  max-width: 560px;
 }
 
 .badge{
@@ -257,7 +293,6 @@ body{
   font-weight:600;
 }
 
-/* Heart burst particles */
 .particles{
   position:absolute;
   inset:0;
@@ -283,7 +318,6 @@ body{
   }
 }
 
-/* Gentle entrance */
 .pop-in{
   animation: popIn 520ms cubic-bezier(.2,.8,.2,1) both;
 }
@@ -293,8 +327,6 @@ body{
   100%{ opacity:1; transform: translateY(0) scale(1); }
 }
 
-/* Keep desktop-only intent */
 @media (max-width: 680px){
   body{ overflow:auto; }
-  .actions{ width: 420px; }
 }
