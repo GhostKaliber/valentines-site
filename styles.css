@@ -229,7 +229,7 @@ body{
 
 .btn{
   appearance:none;
-  border: none;
+  border: 1px solid transparent; /* keeps YES/NO visually equal */
   cursor:pointer;
   user-select:none;
   -webkit-tap-highlight-color: transparent;
@@ -240,7 +240,14 @@ body{
   padding: 14px 22px;
   border-radius: 18px; /* rectangular with rounded corners */
   min-width: 160px;
-  height: 54px;
+  width: 160px;        /* force identical button widths */
+  height: 60px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  line-height: 1;
 
   transform: translateZ(0);
   transition:
@@ -250,6 +257,7 @@ body{
   position:absolute;
   will-change: left, top, transform;
 }
+
 
 .btn:focus-visible{
   outline: 3px solid rgba(255, 90, 168, 0.35);
@@ -346,4 +354,29 @@ body{
 
 @media (max-width: 680px){
   body{ overflow:auto; }
+}
+
+/* ---- Button alignment fix (does not touch NO dodging logic) ---- */
+.button-row{
+  display: flex;
+  justify-content: center;   /* centers the pair */
+  align-items: center;       /* vertically aligns YES with NO arena */
+  gap: clamp(18px, 6vw, 80px);
+  width: 100%;
+  margin-top: 2.5rem;
+}
+
+/* Make the NO arena behave like a centered flex item without changing its size/positioning logic */
+.button-row .no-area{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Mobile: allow stacking if it gets tight */
+@media (max-width: 520px){
+  .button-row{
+    flex-direction: column;
+    gap: 16px;
+  }
 }

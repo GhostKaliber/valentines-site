@@ -67,21 +67,51 @@
     const arena = getArenaLocal();
     const pad = 10;
 
-    // YES stays centered in the left region (everything left of the arena)
-    const leftRegionW = Math.max(0, arena.x - pad);
-    const yesX = clamp((leftRegionW - yesBtn.offsetWidth) / 2, pad, leftRegionW - yesBtn.offsetWidth - pad);
-    const midY = Math.round((actions.clientHeight - yesBtn.offsetHeight) / 2);
+    // Gap similar to your intended "button-row" spacing
+    const gap = clamp(actions.clientWidth * 0.06, 18, 80);
 
+    const yesW = yesBtn.offsetWidth;
+    const noW = noBtn.offsetWidth;
+
+    // Center the PAIR as a whole
+    let yesX = (actions.clientWidth - (yesW + gap + noW)) / 2;
+    let noX = yesX + yesW + gap;
+
+    // Try to keep YES on the left side of the arena (if possible)
+    const maxYesX = arena.x - yesW - pad;
+    if (maxYesX >= pad) yesX = clamp(yesX, pad, maxYesX);
+    else yesX = pad;
+
+    // Recompute NO after clamping YES
+    noX = yesX + yesW + gap;
+
+    // Ensure NO starts inside the arena (shift the pair right if needed)
+    const minNoX = arena.x + pad;
+    const maxNoX = arena.x + arena.w - noW - pad;
+    if (minNoX <= maxNoX && noX < minNoX) {
+        const shift = minNoX - noX;
+        yesX += shift;
+        noX += shift;
+
+        // Re-clamp YES again (and recompute NO) to stay sensible
+        if (maxYesX >= pad) yesX = clamp(yesX, pad, maxYesX);
+        noX = yesX + yesW + gap;
+        noX = clamp(noX, minNoX, maxNoX);
+    }
+
+    // SAME vertical center for both buttons
+    const midY = Math.round((actions.clientHeight - yesBtn.offsetHeight) / 2);
     yesBtn.style.left = `${Math.round(yesX)}px`;
     yesBtn.style.top = `${midY}px`;
 
-    // NO starts centered in the arena
-    const noX = arena.x + (arena.w - noBtn.offsetWidth) / 2;
-    const noY = arena.y + (arena.h - noBtn.offsetHeight) / 2;
+    // Keep NO aligned vertically with YES, but still within arena bounds
+    const minY = arena.y + pad;
+    const maxY = arena.y + arena.h - noBtn.offsetHeight - pad;
+    const noY = (minY <= maxY) ? clamp(midY, minY, maxY) : midY;
 
     noBtn.style.left = `${Math.round(noX)}px`;
     noBtn.style.top = `${Math.round(noY)}px`;
-  }
+}
 
   // ---------- playful "running away" behavior ----------
   const RUN_TRIGGER_DIST = 140;   // how close cursor must be before it runs
