@@ -400,3 +400,19 @@ body{
     gap: 16px;
   }
 }
+
+
+.success-media{
+  margin-top: 18px;
+  display: flex;
+  justify-content: center;
+}
+
+.success-media__img{
+  max-width: min(420px, 86%);
+  height: auto;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 90, 168, 0.22);
+  box-shadow: 0 16px 40px rgba(255, 90, 168, 0.12);
+}
+
